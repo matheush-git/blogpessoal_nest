@@ -1,21 +1,12 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Put,
-  Delete,
-  Body,
-  HttpCode,
-  HttpStatus,
-  ParseIntPipe,
-  Param,
-} from '@nestjs/common';
-import { PostagemService } from '../services/postagem.service';
-import { Postagem } from '../entities/postagem.entity';
+import { Controller, Get, Post, Put, Delete, HttpCode, HttpStatus, Param, Body, HttpException, UseGuards, ParseIntPipe } from "@nestjs/common";
+import { JwtAuthGuard } from "../../auth/guard/jwt-auth.guard";
+import { Postagem } from "../entities/postagem.entity";
+import { PostagemService } from "../services/postagem.service";
 
-@Controller('/postagens')
+@UseGuards(JwtAuthGuard)
+@Controller("/postagens")
 export class PostagemController {
-  constructor(private readonly postagemService: PostagemService) {}
+  constructor(private readonly postagemService: PostagemService) { }
 
   @Get()
   @HttpCode(HttpStatus.OK)
@@ -49,7 +40,8 @@ export class PostagemController {
 
   @Delete('/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async delete(@Param('id', ParseIntPipe) id: number): Promise<void> {
-    await this.postagemService.delete(id);
+  delete(@Param('id', ParseIntPipe) id: number){
+    return this.postagemService.delete(id);
   }
+
 }
