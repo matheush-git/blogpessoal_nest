@@ -15,4 +15,4 @@ export class Bcrypt{
         return await bcrypt.compare(senhaDigitada, senhaBanco);
     }
 
-}
+};

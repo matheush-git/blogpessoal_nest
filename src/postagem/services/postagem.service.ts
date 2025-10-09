@@ -1,31 +1,32 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { DeleteResult, ILike, Repository } from "typeorm";
-import { TemaService } from "../../tema/services/tema.service";
-import { Postagem } from "../entities/postagem.entity";
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { DeleteResult, ILike, Repository } from 'typeorm';
+import { Postagem } from '../entities/postagem.entity';
 
+// injectable é usado em serviços(logica de como vai funcionar as coisas)
 @Injectable()
 export class PostagemService {
     constructor(
+        // o insegctrepository tem relação com o banco de dados, arquivo entity | todas as interações 
         @InjectRepository(Postagem)
-        private postagemRepository: Repository<Postagem>,
-        private temaService:TemaService
-    ) { }
+        // recurso do typeorm que lida com postagem
+        private postagemRepository: Repository<Postagem>
+    ) {}
 
     async findAll(): Promise<Postagem[]> {
-        return await this.postagemRepository.find({
+        // select * from postagens (find() do typeorm), já tem varios metodos prontos
+        return this.postagemRepository.find({ 
             relations:{
-                tema: true,
-                usuario: true
-            }
-        });
+            tema: true,
+            usuario: true
+        }});
+       
     }
 
     async findById(id: number): Promise<Postagem> {
-
         const postagem = await this.postagemRepository.findOne({
             where: {
-                id
+                id,
             },
             relations:{
                 tema: true,
@@ -33,48 +34,36 @@ export class PostagemService {
             }
         });
 
-        if (!postagem)
-            throw new HttpException('Postagem não encontrada!', HttpStatus.NOT_FOUND);
-
+        if (!postagem) {
+            throw new HttpException('Postagem não encontrada', HttpStatus.NOT_FOUND,
+            );
+        }
         return postagem;
     }
 
-    async findAllByTitulo(titulo: string): Promise<Postagem[]> {
-        return await this.postagemRepository.find({
-            where:{
+    async findByTitulo(titulo: string): Promise<Postagem[]> {
+        return this.postagemRepository.find({
+            where: {
                 titulo: ILike(`%${titulo}%`)
             },
             relations:{
                 tema: true,
                 usuario: true
             }
-        })
-    }
+        })}
 
     async create(postagem: Postagem): Promise<Postagem> {
-       
-      	await this.temaService.findById(postagem.tema.id)
-            
         return await this.postagemRepository.save(postagem);
-
     }
 
-    async update(postagem: Postagem): Promise<Postagem> {
-        
-		await this.findById(postagem.id);
-
-		await this.temaService.findById(postagem.tema.id)
-                
-		return await this.postagemRepository.save(postagem);
+    async update (postagem: Postagem): Promise<Postagem> {
+        await this.findById(postagem.id)
+        return this.postagemRepository.save(postagem)
+    }
     
+    async delete (id: number): Promise<DeleteResult>{
+        await this.findById(id)
+        //deleAll é o dele sem o where
+        return this.postagemRepository.delete(id)
     }
-
-    async delete(id: number): Promise<DeleteResult> {
-        
-        await this.findById(id);
-
-        return await this.postagemRepository.delete(id);
-
-    }
-
 }

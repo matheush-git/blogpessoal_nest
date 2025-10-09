@@ -10,7 +10,7 @@ export class UsuarioService {
         @InjectRepository(Usuario)
         private usuarioRepository: Repository<Usuario>,
         private bcrypt: Bcrypt
-    ) { }
+    ) { };
 
     async findByUsuario(usuario: string): Promise<Usuario | null> {
         return await this.usuarioRepository.findOne({
@@ -18,12 +18,12 @@ export class UsuarioService {
                 usuario: usuario
             }
         })
-    }
+    };
 
     async findAll(): Promise<Usuario[]> {
         return await this.usuarioRepository.find();
 
-    }
+    };
 
     async findById(id: number): Promise<Usuario> {
 
@@ -38,7 +38,7 @@ export class UsuarioService {
 
         return usuario;
 
-    }
+    };
 
     async create(usuario: Usuario): Promise<Usuario> {
         
@@ -50,7 +50,7 @@ export class UsuarioService {
         usuario.senha = await this.bcrypt.criptografarSenha(usuario.senha)
         return await this.usuarioRepository.save(usuario);
 
-    }
+    };
 
     async update(usuario: Usuario): Promise<Usuario> {
 
@@ -64,6 +64,6 @@ export class UsuarioService {
         usuario.senha = await this.bcrypt.criptografarSenha(usuario.senha)
         return await this.usuarioRepository.save(usuario);
 
-    }
+    };
 
-}
+};
