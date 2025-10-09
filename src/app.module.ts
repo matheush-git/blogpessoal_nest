@@ -12,7 +12,7 @@ import { ProdService } from './data/services/prod.service';
   imports: [
     ConfigModule.forRoot(),
     TypeOrmModule.forRootAsync({
-    useClasse: ProdService,
+    useClass: ProdService,
         imports: [ConfigModule],
 }),
     PostagemModule,
